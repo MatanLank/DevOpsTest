@@ -1,4 +1,8 @@
 import json
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def handler(event, context):
     try:
@@ -6,8 +10,8 @@ def handler(event, context):
         repo_name = body.get('repository', {}).get('name')
         pull_request = body.get('pull_request', {})
         changes = pull_request.get('changed_files', 0)
-        print(f"Repository: {repo_name}")
-        print(f"Files changed: {changes}")
+        logger.info(f"Repository: {repo_name}")
+        logger.info(f"Files changed: {changes}")
         return {
             'statusCode': 200,
             'body': json.dumps({'message': 'Success'})
