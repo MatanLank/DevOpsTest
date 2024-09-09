@@ -84,6 +84,28 @@ resource "aws_lambda_permission" "api_gateway" {
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
+resource "aws_iam_policy" "secrets_manager_access" {
+  name = "secrets_manager_access_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Effect   = "Allow",
+        Resource = "arn:aws:secretsmanager:us-west-2:622395351311:secret:github_access_token"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_secrets_manager_access" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.secrets_manager_access.arn
+}
+
 output "api_endpoint" {
   value = "${aws_api_gateway_deployment.api.invoke_url}/webhook"
 }
