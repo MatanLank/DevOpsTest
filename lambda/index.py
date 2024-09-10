@@ -18,6 +18,9 @@ def get_github_token():
 
 def handler(event, context):
     try:
+        # Log the received event
+        logger.info(f"Received event: {json.dumps(event)}")
+        
         # Get GitHub token from Secrets Manager
         github_token = get_github_token()
 
@@ -33,11 +36,8 @@ def handler(event, context):
             "Accept": "application/vnd.github.v3+json"
         }
 
-        # Create the request object
         req = urllib.request.Request(files_url, headers=headers)
-
         try:
-            # Open the URL and read the response
             with urllib.request.urlopen(req) as response:
                 if response.status != 200:
                     raise Exception(f"Failed to fetch files: {response.status}, {response.read().decode('utf-8')}")
