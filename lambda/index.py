@@ -1,7 +1,8 @@
 import boto3
 import json
 import logging
-import requests
+import urllib.request
+import urllib.error
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -31,12 +32,24 @@ def handler(event, context):
             "Authorization": f"token {github_token}",
             "Accept": "application/vnd.github.v3+json"
         }
-        response = requests.get(files_url, headers=headers)
-        
-        if response.status_code != 200:
-            raise Exception(f"Failed to fetch files: {response.status_code}, {response.text}")
 
-        changed_files = response.json()
+        # Create the request object
+        req = urllib.request.Request(files_url, headers=headers)
+
+        try:
+            # Open the URL and read the response
+            with urllib.request.urlopen(req) as response:
+                if response.status != 200:
+                    raise Exception(f"Failed to fetch files: {response.status}, {response.read().decode('utf-8')}")
+
+                response_data = response.read().decode('utf-8')
+                changed_files = json.loads(response_data)
+        except urllib.error.HTTPError as e:
+            raise Exception(f"HTTP Error: {e.code}, {e.read().decode('utf-8')}")
+        except urllib.error.URLError as e:
+            raise Exception(f"URL Error: {str(e)}")
+
+        # Extract file names
         file_names = [file['filename'] for file in changed_files]
         
         # Log the repository name and the files that were changed
