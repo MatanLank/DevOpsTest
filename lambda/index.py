@@ -20,15 +20,15 @@ def handler(event, context):
     try:
         # Log the received event
         logger.info(f"Received event: {json.dumps(event)}")
-        
+
         # Get GitHub token from Secrets Manager
         github_token = get_github_token()
 
         # Parse the GitHub event payload
         body = json.loads(event['body'])
-        repo_name = body.get('repository', {}).get('name')
-        pull_request = body.get('pull_request', {})
-        files_url = pull_request.get('url') + "/files"  # GitHub API endpoint for files changed
+        repo_name = body['repository']['name']
+        pull_request = body['pull_request']
+        files_url = pull_request['url'] + "/files"  # GitHub API endpoint for files changed
 
         # Make a GET request to the GitHub API to fetch the changed files
         headers = {
@@ -51,7 +51,7 @@ def handler(event, context):
 
         # Extract file names
         file_names = [file['filename'] for file in changed_files]
-        
+
         # Log the repository name and the files that were changed
         logger.info(f"Repository: {repo_name}")
         logger.info(f"Files changed: {', '.join(file_names)}")
