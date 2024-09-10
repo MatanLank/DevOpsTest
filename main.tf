@@ -91,11 +91,9 @@ resource "aws_iam_policy" "secrets_manager_access" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = [
-          "secretsmanager:GetSecretValue"
-        ],
-        Effect   = "Allow",
-        Resource = "arn:aws:secretsmanager:us-west-2:622395351311:secret:github_access_token"
+        Action = "secretsmanager:GetSecretValue",
+        Effect = "Allow",
+        Resource = "arn:aws:secretsmanager:us-west-2:622395351311:secret:github_access_token-*"
       }
     ]
   })
