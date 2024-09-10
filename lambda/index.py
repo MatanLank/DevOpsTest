@@ -19,13 +19,12 @@ def get_github_token():
 def handler(event, context):
     try:
         # Log the received event
-        logger.info(f"Received event: {json.dumps(event)}")
+        logger.info(f"Received event: {json.dumps(event, indent=2)}")
 
         # Get GitHub token from Secrets Manager
         github_token = get_github_token()
 
-        # Parse the GitHub event payload
-        body = json.loads(event['body'])
+        body = event['body']
         repo_name = body['repository']['name']
         pull_request = body['pull_request']
         files_url = pull_request['url'] + "/files"  # GitHub API endpoint for files changed
